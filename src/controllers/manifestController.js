@@ -9,6 +9,155 @@ const {
 } = require('../socket/trackingSocket');
 
 
+exports.getManifestById = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const manifest =
+            await pool.query(
+                `
+                SELECT *
+                FROM manifests
+                WHERE manifest_id = $1
+                `,
+                [id]
+            );
+
+        const shipments =
+            await pool.query(
+                `
+                SELECT
+
+                    s.awb_no,
+
+                    s.receiver_name,
+
+                    s.receiver_city
+
+                FROM manifest_shipments ms
+
+                JOIN shipments s
+                ON ms.shipment_id =
+                   s.shipment_id
+
+                WHERE ms.manifest_id = $1
+                `,
+                [id]
+            );
+
+        res.status(200).json({
+
+            success: true,
+
+            manifest:
+                manifest.rows[0],
+
+            shipments:
+                shipments.rows
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: 'Server Error'
+        });
+    }
+};
+
+exports.deleteManifest = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        await pool.query(
+
+            `
+            DELETE FROM manifest_shipments
+            WHERE manifest_id = $1
+            `,
+
+            [id]
+        );
+
+        await pool.query(
+
+            `
+            DELETE FROM manifests
+            WHERE manifest_id = $1
+            `,
+
+            [id]
+        );
+
+        res.status(200).json({
+
+            success: true,
+
+            message:
+                'Manifest deleted successfully'
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: 'Server Error'
+        });
+    }
+};
+exports.getManifests = async (req, res) => {
+
+    try {
+
+        const result = await pool.query(
+            `
+            SELECT
+                m.*,
+
+                (
+                    SELECT COUNT(*)
+                    FROM manifest_shipments ms
+                    WHERE ms.manifest_id =
+                    m.manifest_id
+                ) AS shipment_count
+
+            FROM manifests m
+
+            ORDER BY created_at DESC
+            `
+        );
+
+        res.status(200).json({
+
+            success: true,
+
+            data: result.rows
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: 'Server Error'
+        });
+    }
+};
 // ======================================
 // CREATE MANIFEST
 // ======================================

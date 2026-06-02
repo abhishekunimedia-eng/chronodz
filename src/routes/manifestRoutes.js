@@ -10,6 +10,38 @@ const {
 
 
 // ======================================
+// GET ALL MANIFESTS
+// ======================================
+
+router.get(
+    '/',
+    verifyToken,
+    manifestController.getManifests
+);
+
+
+// ======================================
+// GET MANIFEST BY ID
+// ======================================
+
+router.get(
+    '/:id',
+    verifyToken,
+    manifestController.getManifestById
+);
+
+
+// ======================================
+// DELETE MANIFEST
+// ======================================
+
+router.delete(
+    '/:id',
+    verifyToken,
+    manifestController.deleteManifest
+);
+
+// ======================================
 // CREATE MANIFEST
 // ======================================
 
