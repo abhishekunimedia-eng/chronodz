@@ -19,7 +19,10 @@ router.get(
     manifestController.getManifests
 );
 
-
+router.get(
+    '/debug-columns',
+    manifestController.debugManifestColumns
+);
 // ======================================
 // GET MANIFEST BY ID
 // ======================================
