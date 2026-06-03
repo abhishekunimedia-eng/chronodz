@@ -8,7 +8,30 @@ const {
     getIO
 } = require('../socket/trackingSocket');
 
+exports.debugManifestColumns = async (req, res) => {
 
+    try {
+
+        const result = await pool.query(`
+            SELECT
+                column_name,
+                data_type
+            FROM information_schema.columns
+            WHERE table_name = 'manifests'
+            ORDER BY ordinal_position
+        `);
+
+        res.json(result.rows);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
 exports.getManifestById = async (req, res) => {
 
     try {
