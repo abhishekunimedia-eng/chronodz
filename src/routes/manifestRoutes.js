@@ -8,6 +8,10 @@ const {
     verifyToken
 } = require('../middleware/authMiddleware');
 
+router.get(
+    '/migrate-manifest',
+    manifestController.migrateManifestTable
+);
 
 // ======================================
 // GET ALL MANIFESTS

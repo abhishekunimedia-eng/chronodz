@@ -414,3 +414,45 @@ exports.addShipmentToManifest = async (req, res) => {
         });
     }
 };
+
+exports.migrateManifestTable = async (req, res) => {
+
+    try {
+
+        await pool.query(`
+            ALTER TABLE manifests
+            ADD COLUMN IF NOT EXISTS driver_name VARCHAR(150)
+        `);
+
+        await pool.query(`
+            ALTER TABLE manifests
+            ADD COLUMN IF NOT EXISTS driver_mobile VARCHAR(20)
+        `);
+
+        await pool.query(`
+            ALTER TABLE manifests
+            ADD COLUMN IF NOT EXISTS created_by UUID
+        `);
+
+        const result = await pool.query(`
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = 'manifests'
+            ORDER BY ordinal_position
+        `);
+
+        res.json({
+            success: true,
+            columns: result.rows
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
