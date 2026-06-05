@@ -10,6 +10,7 @@ const podRoutes = require('./routes/podRoutes');
 const labelRoutes = require('./routes/labelRoutes');
 const manifestRoutes = require('./routes/manifestRoutes');
 const invoiceRoutes =  require('./routes/invoiceRoutes');
+const hubRoutes = require('./routes/hubRoutes');
 
 const app = express();
 
@@ -54,6 +55,10 @@ app.use('/api/manifests', manifestRoutes);
 
 app.use('/api/invoices', invoiceRoutes);
 
+app.use(
+    '/api/hubs',
+    hubRoutes
+);
 
 
 
